@@ -3,6 +3,7 @@ import {
   AccountsStore,
   CloningRepositoriesStore,
   CopilotStore,
+  CopilotAccountStore,
   GitHubUserStore,
   GitStore,
   IssuesStore,
@@ -106,6 +107,7 @@ import {
   IAPIRepoRuleset,
   deleteToken,
   IAPICreatePushProtectionBypassResponse,
+  validateCopilotToken,
 } from '../api'
 import { shell } from '../app-shell'
 import {
@@ -644,7 +646,8 @@ export class AppStore extends TypedBaseStore<IAppState> {
     private readonly repositoryStateCache: RepositoryStateCache,
     private readonly apiRepositoriesStore: ApiRepositoriesStore,
     private readonly notificationsStore: NotificationsStore,
-    private readonly copilotStore: CopilotStore
+    private readonly copilotStore: CopilotStore,
+    private readonly copilotAccountStore: CopilotAccountStore
   ) {
     super()
 
@@ -721,6 +724,11 @@ export class AppStore extends TypedBaseStore<IAppState> {
     )
 
     onShowInstallingUpdate(this.onShowInstallingUpdate)
+
+    // Subscribe to Copilot account changes
+    this.copilotAccountStore.onDidUpdate(() => {
+      this.emitUpdate()
+    })
   }
 
   private initializeWindowState = async () => {
@@ -1093,6 +1101,8 @@ export class AppStore extends TypedBaseStore<IAppState> {
         this.confirmCommitFilteredChanges,
       askForConfirmationOnCommitMessageOverride:
         this.confirmCommitMessageOverride,
+      copilotAccount: this.copilotAccountStore.getCopilotAccountSync(),
+      isCopilotLoading: false,
       uncommittedChangesStrategy: this.uncommittedChangesStrategy,
       selectedExternalEditor: this.selectedExternalEditor,
       imageDiffType: this.imageDiffType,
@@ -5624,10 +5634,13 @@ export class AppStore extends TypedBaseStore<IAppState> {
     repository: Repository,
     filesSelected: ReadonlyArray<WorkingDirectoryFileChange>
   ): Promise<boolean> {
-    const account = getAccountForCommitMessageGeneration(
-      this.accounts,
-      repository
-    )
+    // Priority 1: Use the dedicated Copilot account if configured
+    const copilotAccount = await this.copilotAccountStore.getCopilotAccount()
+
+    // Priority 2: Fall back to repository-associated or any Copilot-enabled account
+    const account =
+      copilotAccount ??
+      getAccountForCommitMessageGeneration(this.accounts, repository)
 
     if (!account) {
       return false
@@ -6445,6 +6458,36 @@ export class AppStore extends TypedBaseStore<IAppState> {
     )
     await this.accountsStore.removeAccount(account)
     await deleteToken(account)
+  }
+
+  /**
+   * Set the dedicated Copilot account using a validated token.
+   * This account is used exclusively for AI-generated commit messages.
+   */
+  public async _setCopilotAccount(token: string): Promise<Account | null> {
+    const validatedAccount = await validateCopilotToken(token)
+
+    if (!validatedAccount) {
+      throw new Error(
+        'Invalid token or token does not have Copilot access. Please check your token and try again.'
+      )
+    }
+
+    if (!validatedAccount.isCopilotDesktopEnabled) {
+      throw new Error(
+        'Copilot is not enabled for this account. Please ensure you have an active Copilot subscription.'
+      )
+    }
+
+    await this.copilotAccountStore.setCopilotAccount(validatedAccount)
+    return validatedAccount
+  }
+
+  /**
+   * Clear the dedicated Copilot account.
+   */
+  public async _clearCopilotAccount(): Promise<void> {
+    await this.copilotAccountStore.clearCopilotAccount()
   }
 
   private async _addAccount(account: Account): Promise<void> {

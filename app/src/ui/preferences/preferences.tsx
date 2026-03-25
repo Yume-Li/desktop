@@ -91,6 +91,9 @@ interface IPreferencesProps {
   readonly onEditGlobalGitConfig: () => void
   readonly underlineLinks: boolean
   readonly showDiffCheckMarks: boolean
+  // Copilot account props
+  readonly copilotAccount: Account | null
+  readonly isCopilotLoading: boolean
 }
 
 interface IPreferencesState {
@@ -399,6 +402,14 @@ export class Preferences extends React.Component<
     this.props.dispatcher.removeAccount(account)
   }
 
+  private onSetCopilotAccount = async (token: string) => {
+    await this.props.dispatcher.setCopilotAccount(token)
+  }
+
+  private onClearCopilotAccount = async () => {
+    await this.props.dispatcher.clearCopilotAccount()
+  }
+
   private renderDisallowedCharactersError() {
     const message = this.state.disallowedCharactersMessage
     if (message != null) {
@@ -438,6 +449,10 @@ export class Preferences extends React.Component<
             onDotComSignIn={this.onDotComSignIn}
             onEnterpriseSignIn={this.onEnterpriseSignIn}
             onLogout={this.onLogout}
+            copilotAccount={this.props.copilotAccount}
+            isCopilotLoading={this.props.isCopilotLoading}
+            onSetCopilotAccount={this.onSetCopilotAccount}
+            onClearCopilotAccount={this.onClearCopilotAccount}
           />
         )
         break

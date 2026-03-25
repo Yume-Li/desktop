@@ -27,6 +27,19 @@ import {
 } from '../models/progress'
 
 import { SignInState } from './stores/sign-in-store'
+import { WindowState } from './window-state'
+import { DragElement } from './drag-element'
+import { Emoji } from './emoji'
+import { Banner } from './banner'
+import { Foldout, FoldoutType } from './foldout'
+import { Popup } from './popup'
+import { PossibleSelections, SelectionType } from './selection-type'
+import { ILastThankYou } from './last-thank-you'
+import { UncommittedChangesStrategy } from '../models/uncommitted-changes-strategy'
+import { ApplicationTheme } from '../ui/lib/application-theme'
+import { Shell } from './shells'
+import { ICustomIntegration } from './custom-integration'
+import { NotificationsScope } from './notifications-scope'
 
 import { WindowState } from './window-state'
 import { Shell } from './shells'
@@ -242,6 +255,12 @@ export interface IAppState {
 
   /** Should the app prompt the user to confirm commit message override? */
   readonly askForConfirmationOnCommitMessageOverride: boolean
+
+  /** The dedicated Copilot account for commit message generation */
+  readonly copilotAccount: Account | null
+
+  /** Whether the Copilot account is currently being loaded/validated */
+  readonly isCopilotLoading: boolean
 
   /** How the app should handle uncommitted changes when switching branches */
   readonly uncommittedChangesStrategy: UncommittedChangesStrategy

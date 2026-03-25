@@ -2251,6 +2251,25 @@ export async function fetchUser(
 }
 
 /**
+ * Validate a GitHub token and return the associated account with Copilot info.
+ * Used specifically for the dedicated Copilot account feature.
+ *
+ * @param token - The GitHub Personal Access Token to validate
+ * @returns The validated Account with Copilot information, or null if validation fails
+ */
+export async function validateCopilotToken(
+  token: string
+): Promise<Account | null> {
+  try {
+    const account = await fetchUser(getDotComAPIEndpoint(), token)
+    return account
+  } catch (e) {
+    log.warn('validateCopilotToken: failed to validate token', e)
+    return null
+  }
+}
+
+/**
  * Map a repository's URL to the endpoint associated with it. For example:
  *
  * https://github.com/desktop/desktop -> https://api.github.com

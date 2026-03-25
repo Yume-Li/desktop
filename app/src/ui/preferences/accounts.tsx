@@ -13,6 +13,7 @@ import { DialogContent, DialogPreferredFocusClassName } from '../dialog'
 import { Avatar } from '../lib/avatar'
 import { CallToAction } from '../lib/call-to-action'
 import { getHTMLURL } from '../../lib/api'
+import { CopilotAccountSettings } from './copilot-account-settings'
 
 interface IAccountsProps {
   readonly accounts: ReadonlyArray<Account>
@@ -20,6 +21,12 @@ interface IAccountsProps {
   readonly onDotComSignIn: () => void
   readonly onEnterpriseSignIn: () => void
   readonly onLogout: (account: Account) => void
+
+  // Copilot account props
+  readonly copilotAccount: Account | null
+  readonly isCopilotLoading: boolean
+  readonly onSetCopilotAccount: (token: string) => Promise<void>
+  readonly onClearCopilotAccount: () => Promise<void>
 }
 
 enum SignInType {
@@ -41,6 +48,14 @@ export class Accounts extends React.Component<IAccountsProps, {}> {
 
         <h2>GitHub Enterprise</h2>
         {this.renderMultipleEnterpriseAccounts()}
+
+        <h2>Copilot Commit Message Generation</h2>
+        <CopilotAccountSettings
+          copilotAccount={this.props.copilotAccount}
+          isLoading={this.props.isCopilotLoading}
+          onSetCopilotAccount={this.props.onSetCopilotAccount}
+          onClearCopilotAccount={this.props.onClearCopilotAccount}
+        />
       </DialogContent>
     )
   }

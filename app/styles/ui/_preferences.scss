@@ -120,6 +120,110 @@
         margin-left: 0;
       }
     }
+
+    // Copilot account settings styles
+    .copilot-account-settings {
+      margin-top: var(--spacing);
+      padding-top: var(--spacing);
+      border-top: var(--base-border);
+
+      h2 {
+        margin-top: 0;
+        margin-bottom: var(--spacing);
+        font-size: var(--font-size-md);
+      }
+
+      .copilot-description {
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary-color);
+        margin-bottom: var(--spacing);
+      }
+
+      .token-input-row {
+        display: flex;
+        gap: var(--spacing);
+        margin-bottom: var(--spacing);
+
+        .token-input {
+          flex: 1;
+          padding: var(--spacing-half);
+          border: var(--base-border);
+          border-radius: var(--border-radius);
+          font-family: var(--font-family);
+          font-size: var(--font-size);
+
+          &:focus {
+            outline: none;
+            border-color: var(--focus-border-color);
+            box-shadow: 0 0 0 1px var(--focus-border-color);
+          }
+
+          &:disabled {
+            background-color: var(--disabled-background-color);
+          }
+        }
+
+        .button-component {
+          min-width: 150px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          .loading {
+            margin-right: var(--spacing-half);
+          }
+        }
+      }
+
+      .error-message {
+        color: var(--text-error-color);
+        font-size: var(--font-size-sm);
+        margin-bottom: var(--spacing);
+      }
+
+      .token-help {
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary-color);
+
+        a {
+          color: var(--text-link-color);
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+
+      .copilot-info {
+        margin-top: var(--spacing);
+        padding: var(--spacing);
+        background-color: var(--background-color);
+        border-radius: var(--border-radius);
+        border: var(--base-border);
+
+        p {
+          margin: 0;
+          font-size: var(--font-size-sm);
+          color: var(--text-secondary-color);
+        }
+      }
+
+      .copilot-account {
+        .user-info {
+          .copilot-badge {
+            display: inline-block;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-color);
+            background-color: var(--selection-color);
+            padding: 2px 6px;
+            border-radius: var(--border-radius);
+            margin-top: var(--spacing-half);
+          }
+        }
+      }
+    }
   }
 
   .no-options-found {

@@ -1109,6 +1109,16 @@ export class Dispatcher {
     return this.appStore._removeAccount(account)
   }
 
+  /** Set the dedicated Copilot account using a token. */
+  public setCopilotAccount(token: string): Promise<Account | null> {
+    return this.appStore._setCopilotAccount(token)
+  }
+
+  /** Clear the dedicated Copilot account. */
+  public clearCopilotAccount(): Promise<void> {
+    return this.appStore._clearCopilotAccount()
+  }
+
   /**
    * Ask the dispatcher to apply a transformation function to the current
    * state of the application menu.
